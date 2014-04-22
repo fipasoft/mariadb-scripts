@@ -1,0 +1,26 @@
+#!/bin/bash
+cat <<EOT
+
+BEGIN;
+
+# Crear tabla $1
+CREATE TABLE IF NOT EXISTS $1 (
+  \`id\` INT(10) unsigned NOT NULL AUTO_INCREMENT,
+  \`tableRef_id\` INT(10) unsigned NOT NULL,
+  PRIMARY KEY (\`id\`),
+  KEY $1_FKIndex1 (\`tableRef_id\`),
+  CONSTRAINT $1_ibfk_1
+  FOREIGN KEY (\`tableRef_id\`) REFERENCES tableRef (\`id\`)
+  ON DELETE CASCADE ON UPDATE CASCADE
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci;
+
+# Probar tabla $1
+DESCRIBE $1;
+
+ROLLBACK;
+#COMMIT;
+
+EOT
