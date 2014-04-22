@@ -1,0 +1,21 @@
+#!/bin/bash
+cat <<EOT
+
+BEGIN;
+
+# Crear tabla $1
+CREATE TABLE IF NOT EXISTS $1 (
+  \`id\` INT(10) unsigned NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (\`id\`)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci;
+
+# Probar tabla $1
+DESCRIBE $1;
+
+ROLLBACK;
+#COMMIT;
+
+EOT
