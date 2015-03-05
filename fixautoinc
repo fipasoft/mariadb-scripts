@@ -1,0 +1,14 @@
+#!/bin/bash
+db=${1}
+tables=`mysql -u root -p ${db} -NBe "SHOW FULL tables WHERE Table_type='BASE TABLE';" | cut -f 1`
+tmpfile=/tmp/fixautoinc-`date +%s`
+for table in $tables; do
+    echo "SELECT IFNULL(MAX(id), 0) INTO @max FROM ${table};" >> ${tmpfile}
+    echo "SET @max = @max + 1;" >> ${tmpfile}
+    echo "SET @autoinc = CONCAT('ALTER TABLE ${table} AUTO_INCREMENT = ',@max);" >> ${tmpfile}
+    echo "SELECT CONCAT('# ' , @autoinc);" >> ${tmpfile}
+    echo "PREPARE autoinc FROM @autoinc;" >> ${tmpfile}
+    echo "EXECUTE autoinc;" >> ${tmpfile}
+    echo "DEALLOCATE PREPARE autoinc;" >> ${tmpfile}
+done;
+mysql -u root -p ${db} -NB < ${tmpfile}
